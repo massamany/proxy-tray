@@ -19,7 +19,11 @@ To install and run, just follow these few steps :
 If you want it up at startup, run `gnome-session-properties` and configure a new application at startup,
 using the previous command line with nohup : `nohup ~/proxy-tray/proxy-tray.py > /dev/null 2>&1 &`.
 
+## Internationalization
+
+French and English are handled. Default is English if detected locale is not handled.
+
 ## Future
 
 This is a very small and quick-made app.
-It will evolve to add more features (like proxy profiles, icons, etc ...)
+It will evolve to add more features (like proxy profiles, icons, settings, etc ...)
