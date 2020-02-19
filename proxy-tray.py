@@ -5,7 +5,7 @@ import subprocess
 from gi.repository import Gtk as gtk, Gio as gio, AppIndicator3 as appindicator
 from inspect import currentframe, getframeinfo
 import gettext
-import locale
+from config import ProxyTrayConfig
 
 class ProxyTray:
 
@@ -20,30 +20,31 @@ class ProxyTray:
 
         self.proxySetting = gio.Settings.new("org.gnome.system.proxy")
 
-        self.command_no_proxy = gtk.MenuItem(_('Deactivate Proxy'))
-        self.command_proxy_man = gtk.MenuItem(_('Activate Manual Proxy'))
-        self.command_proxy_auto = gtk.MenuItem(_('Activate Automatic Proxy'))
+        self.command_no_proxy = gtk.MenuItem(label=_('Deactivate Proxy'))
+        self.command_proxy_man = gtk.MenuItem(label=_('Activate Manual Proxy'))
+        self.command_proxy_auto = gtk.MenuItem(label=_('Activate Automatic Proxy'))
 
         self.indicator = appindicator.Indicator.new("ProxyTray", "", appindicator.IndicatorCategory.APPLICATION_STATUS)
         self.menu = gtk.Menu()
-        self.command_current = gtk.MenuItem('')
+        self.command_current = gtk.MenuItem(label='')
 
         self.initMenu()
 
     def initLang(self):
-        loc = locale.getlocale()[0][:2]
+        locale = ProxyTrayConfig.getLocale()
         try:
-            if loc.startswith('en') == False:
-                trs = gettext.translation('proxy-tray', localedir='i18n', languages=[loc])
+            if locale.startswith('en') == False:
+                trs = gettext.translation('proxy-tray', localedir='i18n', languages=[locale])
                 trs.install()
                 gettext.bindtextdomain('ProxyTray', self.path + '/i18n/')
                 gettext.textdomain('ProxyTray')
             else:
                 gettext.install("")
 
-            print("Loaded language: " + loc)
+            print("Loaded language: " + locale)
         except Exception as e:
-            print("Failed to load language: " + loc + ". Using default.")
+            print(e)
+            print("Failed to load language: " + locale + ". Using default.")
             gettext.install("")
 
     def initMenu(self):
@@ -65,7 +66,7 @@ class ProxyTray:
         self.command_proxy_auto.connect('activate', self.proxy_auto)
         self.menu.append(self.command_proxy_auto)
 
-        exittray = gtk.MenuItem(_('Exit Tray'))
+        exittray = gtk.MenuItem(label=_('Exit Tray'))
         exittray.connect('activate', self.quit)
         self.menu.append(exittray)
 
@@ -86,14 +87,13 @@ class ProxyTray:
         self.command_proxy_man.set_sensitive(mode != "manual")
         self.command_proxy_auto.set_sensitive(mode != "auto")
         if mode == "none":
-            self.indicator.set_icon(os.path.abspath(self.path + '/icons/no_proxy.png'))
             modeLib = _('Deactivated')
+            self.indicator.set_icon_full(os.path.abspath(self.path + '/icons/no_proxy.png'), modeLib)
         if mode == "auto":
-            self.indicator.set_icon(os.path.abspath(self.path + '/icons/proxy_auto.png'))
             modeLib = _('Automatic')
+            self.indicator.set_icon_full(os.path.abspath(self.path + '/icons/proxy_auto.png'), modeLib)
         if mode == "manual":
-            self.indicator.set_icon(os.path.abspath(self.path + '/icons/proxy_man.png'))
-            modeLib = _('Manual')
+            self.indicator.set_icon_full(os.path.abspath(self.path + '/icons/proxy_man.png'), modeLib)
 
         self.command_current.set_label(_('Proxy: ') + modeLib)
     
