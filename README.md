@@ -2,7 +2,7 @@
 
 ## Preamble
 
-This small python utility allows Linux users to quickly switch their proxy settings between none, manual or auto.
+This small python utility allows Linux GNome users to quickly switch their proxy settings between none, manual or auto.
 
 This is useful if your move your laptop from home to work every day: you will save some precious clicks ! :-)
 
@@ -39,15 +39,30 @@ You can configure ProxyTray with a file in your home directory : `~/.proxytray.y
 
 For now it allows to configure:
 
-- Language.
+- Language (only via preference file edition).
+- Proxy profiles that you can apply to configure you system. Useful if you switch seats between several companies. The profiles are editable via a GUI.
 
 File structure: 
 
 ---
 locale: [fr]  -- If omitted, falls back to en.
+profiles:  -- name, manual and auto are mandatory
+- name: ProfileName
+  manual: [true|false]  -- If false, leaves manual proxy configuration untouched
+  httpHost: http proxy host
+  httpPort: http proxy port
+  httpsHost: https proxy host
+  httpsPort: https proxy port
+  ftpHost: ftp proxy host
+  ftpPort: ftp proxy port
+  socksHost: socks proxy host
+  socksPort: socks proxy port
+  ignored: non proxy hosts
+  auto: [true|false]  -- If false, leaves auto proxy configuration untouched
+  autoConfigUrl: url for automatic proxy configuration
 ---
 
 ## Future
 
 This is a very small and quick-made app.
-It will evolve to add more features (like proxy profiles, icons, more settings, etc ...)
+It will evolve to add more features (like adding other OS support, nice icons, more settings, etc ...)
