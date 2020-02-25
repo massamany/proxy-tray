@@ -20,7 +20,7 @@ class ProxyTray:
         self.path = os.path.dirname(os.path.abspath(filename))
         print('ProxyTray installed in ' + self.path)
 
-        self.initLang()
+        self._initLang()
 
         self.proxySetting = gio.Settings.new("org.gnome.system.proxy")
         self.proxySettingHttp = gio.Settings.new("org.gnome.system.proxy.http")
@@ -28,25 +28,25 @@ class ProxyTray:
         self.proxySettingFtp = gio.Settings.new("org.gnome.system.proxy.ftp")
         self.proxySettingSocks = gio.Settings.new("org.gnome.system.proxy.socks")
 
-        self.command_current = gtk.MenuItem(label='')
-        self.command_no_proxy = gtk.MenuItem(label=_('Deactivate Proxy'))
-        self.command_proxy_man = gtk.MenuItem(label=_('Activate Manual Proxy'))
-        self.command_proxy_auto = gtk.MenuItem(label=_('Activate Automatic Proxy'))
+        self.commandCurrent = gtk.MenuItem(label='')
+        self.commandNoProxy = gtk.MenuItem(label=_('Deactivate Proxy'))
+        self.commandProxyMan = gtk.MenuItem(label=_('Activate Manual Proxy'))
+        self.commandProxyAuto = gtk.MenuItem(label=_('Activate Automatic Proxy'))
 
         self.indicator = appindicator.Indicator.new("ProxyTray", "", appindicator.IndicatorCategory.APPLICATION_STATUS)
         self.menu = gtk.Menu()
 
         self.profilesMenuItem = gtk.MenuItem(label=_('Proxy Profiles'))
         self.profilesMenu = gtk.Menu()
-        self.command_new_profile = gtk.MenuItem(label=_('New Profile'))
+        self.commandNewProfile = gtk.MenuItem(label=_('New Profile'))
 
-        self.initMenu()
+        self._initMenu()
 
-    def initLang(self):
+    def _initLang(self):
         locale = ProxyTrayConfig.getLocale()
         try:
             if locale.startswith('en') == False:
-                trs = gettext.translation('proxytray', localedir='i18n', languages=[locale])
+                trs = gettext.translation('proxytray', localedir=self.path + '/i18n', languages=[locale])
                 trs.install()
                 gettext.bindtextdomain('ProxyTray', self.path + '/i18n/')
                 gettext.textdomain('ProxyTray')
@@ -59,30 +59,29 @@ class ProxyTray:
             print("Failed to load language: " + locale + ". Using default.")
             gettext.install("")
 
-    def initMenu(self):
-        self.proxySetting.connect("changed::mode", self.refresh)
-        self.doRefresh()
+    def _initMenu(self):
+        self.proxySetting.connect("changed::mode", self._refresh)
+        self.refresh()
 
-        self.command_current.set_sensitive(False)
-        self.command_current.connect('activate', self.refresh)
-        self.menu.append(self.command_current)
+        self.commandCurrent.set_sensitive(False)
+        self.menu.append(self.commandCurrent)
 
         self.menu.append(gtk.SeparatorMenuItem())
 
-        self.command_no_proxy.connect('activate', self.no_proxy)
-        self.menu.append(self.command_no_proxy)
+        self.commandNoProxy.connect('activate', self._noProxy)
+        self.menu.append(self.commandNoProxy)
 
-        self.command_proxy_man.connect('activate', self.proxy_man)
-        self.menu.append(self.command_proxy_man)
+        self.commandProxyMan.connect('activate', self._proxyMan)
+        self.menu.append(self.commandProxyMan)
 
-        self.command_proxy_auto.connect('activate', self.proxy_auto)
-        self.menu.append(self.command_proxy_auto)
+        self.commandProxyAuto.connect('activate', self._proxyAuto)
+        self.menu.append(self.commandProxyAuto)
 
         self.menu.append(gtk.SeparatorMenuItem())
 
         self.profilesMenuItem.set_submenu(self.profilesMenu)
         self.menu.append(self.profilesMenuItem)
-        self.command_new_profile.connect('activate', self.newProfile)
+        self.commandNewProfile.connect('activate', self._newProfile)
         self.updateProfilesMenu()
 
         self.menu.append(gtk.SeparatorMenuItem())
@@ -93,21 +92,21 @@ class ProxyTray:
 
         self.menu.show_all()
 
-        self.menu.connect('scroll-event', self.refresh)
+        self.menu.connect('scroll-event', self._refresh)
         self.indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
         self.indicator.set_menu(self.menu)
 
         #self.newProfile(None)
 
-    def refresh(self, _, __):
-        self.doRefresh()
+    def _refresh(self, _, __):
+        self.refresh()
 
-    def doRefresh(self):
+    def refresh(self):
         mode = self.proxySetting.get_string("mode")
         modeLib = ""
-        self.command_no_proxy.set_sensitive(mode != "none")
-        self.command_proxy_man.set_sensitive(mode != "manual")
-        self.command_proxy_auto.set_sensitive(mode != "auto")
+        self.commandNoProxy.set_sensitive(mode != "none")
+        self.commandProxyMan.set_sensitive(mode != "manual")
+        self.commandProxyAuto.set_sensitive(mode != "auto")
         if mode == "none":
             modeLib = _('Deactivated')
             self.indicator.set_icon_full(os.path.abspath(self.path + '/icons/no_proxy.png'), modeLib)
@@ -117,34 +116,34 @@ class ProxyTray:
         if mode == "manual":
             self.indicator.set_icon_full(os.path.abspath(self.path + '/icons/proxy_man.png'), modeLib)
 
-        self.command_current.set_label(_('Proxy: ') + modeLib)
+        self.commandCurrent.set_label(_('Proxy: ') + modeLib)
     
-    def no_proxy(self, _):
+    def _noProxy(self, _):
         self.proxySetting.set_string("mode", "none")
 
-    def proxy_man(self, _):
+    def _proxyMan(self, _):
         self.proxySetting.set_string("mode", "manual")
 
-    def proxy_auto(self, _):
+    def _proxyAuto(self, _):
         self.proxySetting.set_string("mode", "auto")
 
-    def newProfile(self, _):
-        profile.EditProfileWindow(self, None)
+    def _newProfile(self, _):
+        profile.ProfileEditor(self, None)
 
     def updateProfilesMenu(self):
         for oldItem in self.profilesMenu.get_children():
             self.profilesMenu.remove(oldItem)
-        self.profilesMenu.append(self.command_new_profile)
+        self.profilesMenu.append(self.commandNewProfile)
         for profile in ProxyTrayConfig.getProfiles():
             profileMenuItem = gtk.MenuItem(label=profile['name'])
             self.profilesMenu.append(profileMenuItem)
             profileSubMenu = gtk.Menu()
             profileMenuItem.set_submenu(profileSubMenu)
             profileSubMenuItem = gtk.MenuItem(label=_('Apply'))
-            profileSubMenuItem.connect('activate', self.applyProfile, profile['name'])
+            profileSubMenuItem.connect('activate', self._applyProfile, profile['name'])
             profileSubMenu.append(profileSubMenuItem)
             profileSubMenuItem = gtk.MenuItem(label=_('Edit'))
-            profileSubMenuItem.connect('activate', self.modifyProfile, profile['name'])
+            profileSubMenuItem.connect('activate', self._modifyProfile, profile['name'])
             profileSubMenu.append(profileSubMenuItem)
         
         self.profilesMenu.show_all()
@@ -172,7 +171,10 @@ class ProxyTray:
             'autoConfigUrl': self.proxySetting.get_string("autoconfig-url")
         }
 
-    def applyProfile(self, _, name):
+    def _applyProfile(self, _, name):
+        self.applyProfile(name)
+
+    def applyProfile(self, name):
         profile = ProxyTrayConfig.getProfile(name)
 
         if profile.get('manual'):
@@ -212,10 +214,16 @@ class ProxyTray:
         else:
             settings.reset(k)
 
-    def modifyProfile(self, _, name):
-        profile.EditProfileWindow(self, ProxyTrayConfig.getProfile(name))
+    def _modifyProfile(self, _, name):
+        self.modifyProfile(name)
 
-    def deleteProfile(self, _, name):
+    def modifyProfile(self, name):
+        profile.ProfileEditor(self, ProxyTrayConfig.getProfile(name))
+
+    def _deleteProfile(self, _, name):
+        self.deleteProfile(name)
+
+    def deleteProfile(self, name):
         ProxyTrayConfig.deleteProfile(name)
         self.updateProfilesMenu()
 

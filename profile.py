@@ -5,7 +5,7 @@ from gi.repository import Gtk
 import os
 from config import ProxyTrayConfig
 
-class EditProfileWindow(Gtk.Window):
+class ProfileEditor(Gtk.Window):
 
     def __init__(self, proxyTray, profileToEdit):
         self.proxyTray = proxyTray
@@ -22,24 +22,24 @@ class EditProfileWindow(Gtk.Window):
         btnbox = Gtk.HBox(spacing=6)
 
         self.fromCurrentButton = Gtk.Button(label=_("From Current Configuration"))
-        self.fromCurrentButton.connect("clicked", self.fromCurrent)
+        self.fromCurrentButton.connect("clicked", self._fromCurrent)
         btnbox.pack_start(self.fromCurrentButton, False, False, 0)
 
         self.saveButton = Gtk.Button(label=_("Save"))
-        self.saveButton.connect("clicked", self.save)
+        self.saveButton.connect("clicked", self._save)
         btnbox.pack_end(self.saveButton, False, False, 0)
 
         self.applyButton = Gtk.Button(label=_("Save and Apply"))
-        self.applyButton.connect("clicked", self.apply)
+        self.applyButton.connect("clicked", self._apply)
         btnbox.pack_end(self.applyButton, False, False, 0)
 
         self.cancelButton = Gtk.Button(label=_("Cancel"))
-        self.cancelButton.connect("clicked", self.cancel)
+        self.cancelButton.connect("clicked", self._cancel)
         btnbox.pack_end(self.cancelButton, False, False, 0)
 
         if not self.creation:
             self.deleteButton = Gtk.Button(label=_("Delete"))
-            self.deleteButton.connect("clicked", self.delete)
+            self.deleteButton.connect("clicked", self._delete)
             btnbox.pack_end(self.deleteButton, False, False, 0)
 
         mainbox.pack_end(btnbox, False, False, 0)
@@ -77,19 +77,19 @@ class EditProfileWindow(Gtk.Window):
         modeBox = Gtk.HBox(spacing=6)
 
         self.modeManualButton = Gtk.RadioButton.new_with_label_from_widget(None, "Manual")
-        self.modeManualButton.connect("toggled", self.changeMode, "manual")
+        self.modeManualButton.connect("toggled", self._changeMode, "manual")
         modeBox.pack_start(self.modeManualButton, False, False, 0)
 
         self.modeAutoButton = Gtk.RadioButton.new_with_label_from_widget(self.modeManualButton, "Automatic")
-        self.modeAutoButton.connect("toggled", self.changeMode, "auto")
+        self.modeAutoButton.connect("toggled", self._changeMode, "auto")
         modeBox.pack_start(self.modeAutoButton, False, False, 0)
 
         self.leaveUnchangedManualButton = Gtk.CheckButton()
         self.leaveUnchangedManualButton.set_active(not self._getProfileValue('manual'))
-        self.leaveUnchangedManualButton.connect("toggled", self.updateMode, "manual")
+        self.leaveUnchangedManualButton.connect("toggled", self._updateMode, "manual")
         self.leaveUnchangedAutoButton = Gtk.CheckButton()
         self.leaveUnchangedAutoButton.set_active(not self._getProfileValue('auto'))
-        self.leaveUnchangedAutoButton.connect("toggled", self.updateMode, "auto")
+        self.leaveUnchangedAutoButton.connect("toggled", self._updateMode, "auto")
 
         self.httpHost = ProfileHost(self, "http")
         self.httpsHost = ProfileHost(self, "https")
@@ -103,7 +103,7 @@ class EditProfileWindow(Gtk.Window):
 
         self.grid.attach(modeBox, 1, 1, 1, 1)
 
-        self.showModeManual()
+        self._showModeManual()
         self._updateButtons()
 
     def _updateButtons(self):
@@ -144,50 +144,50 @@ class EditProfileWindow(Gtk.Window):
             if self.autoConfigUrlText.get_text():
                 self.profile['autoConfigUrl'] = self.autoConfigUrlText.get_text()
 
-    def save(self, _):
+    def _save(self, _):
         self._updateProfile()
         ProxyTrayConfig.saveProfile(self.profile)
         self.proxyTray.updateProfilesMenu()
         self.destroy()
 
-    def fromCurrent(self, _):
+    def _fromCurrent(self, _):
         self.profile = self.proxyTray.generateProfile(self._getProfileValue('name'))
-        self.hideAllModes()
+        self._hideAllModes()
         self.grid.remove_row(1)
         self._generateProfileConfigUI()
 
-    def cancel(self, _):
+    def _cancel(self, _):
         self.destroy()
 
-    def delete(self, _):
-        self.save(_)
-        self.proxyTray.deleteProfile(_, self.profile['name'])
+    def _delete(self, _):
+        self._save(_)
+        self.proxyTray.deleteProfile(self.profile['name'])
         self.destroy()
 
-    def apply(self, _):
-        self.save(_)
-        self.proxyTray.applyProfile(_, self.profile['name'])
+    def _apply(self, _):
+        self._save(_)
+        self.proxyTray.applyProfile(self.profile['name'])
         self.destroy()
 
     def _changeName(self, _):
         self._updateButtons()
 
-    def changeMode(self, _, mode):
+    def _changeMode(self, _, mode):
         if _.get_active():
-            self.updateMode(_, mode)
+            self._updateMode(_, mode)
 
-    def updateMode(self, _, mode):
-            self.hideAllModes()
+    def _updateMode(self, _, mode):
+            self._hideAllModes()
             if mode == "manual":
-                self.showModeManual()
+                self._showModeManual()
             if mode == "auto":
-                self.showModeAuto()
+                self._showModeAuto()
 
-    def hideAllModes(self):
+    def _hideAllModes(self):
         for idx in range(1, 7):
             self.grid.remove_row(2)
 
-    def showModeManual(self):
+    def _showModeManual(self):
         self.grid.attach(self.labels[2], 0, 2, 1, 1)
         self.grid.attach(self.leaveUnchangedManualButton, 1, 2, 1, 1)
 
@@ -206,7 +206,7 @@ class EditProfileWindow(Gtk.Window):
 
         self.show_all()
 
-    def showModeAuto(self):
+    def _showModeAuto(self):
         self.grid.attach(self.labels[2], 0, 2, 1, 1)
         self.grid.attach(self.leaveUnchangedAutoButton, 1, 2, 1, 1)
 
@@ -219,22 +219,23 @@ class EditProfileWindow(Gtk.Window):
 
 class ProfileHost(Gtk.Window):
 
-    def __init__(self, editProfileWindow, name):
+    def __init__(self, ProfileEditor, name):
         self.hostText = Gtk.Entry()
-        self.hostText.set_text(editProfileWindow._getProfileValue(name + 'Host'))
+        self.hostText.set_text(ProfileEditor._getProfileValue(name + 'Host'))
         self.hostText.set_size_request(400, -1)
+        self.hostText.connect("changed", self._hostChanged)
         self.portText = Gtk.SpinButton()
         self.portText.set_range(1, 65535)
         self.portText.set_increments(1, 100)
-        port = editProfileWindow._getProfileValue(name + 'Port', 1)
+        port = ProfileEditor._getProfileValue(name + 'Port', 1)
         if port < 1:
             port = 1
         self.portText.set_text(str(port))
-        #self.portText.set_numeric(True)
         self.portText.set_update_policy(Gtk.SpinButtonUpdatePolicy.IF_VALID)
         self.mainbox = Gtk.HBox(spacing=6)
         self.mainbox.pack_start(self.hostText, False, False, 0)
         self.mainbox.pack_start(self.portText, False, False, 0)
+        self._hostChanged(None)
 
     def component(self):
         return self.mainbox
@@ -244,3 +245,19 @@ class ProfileHost(Gtk.Window):
     
     def getPort(self):
         return self.portText.get_text()
+    
+    def setHost(self, host):
+        self.hostText.set_text(host)
+        self._hostChanged(None)
+    
+    def setPort(self, port):
+        self.portText.set_text(port)
+    
+    def _hostChanged(self, _):
+        if self.getHost():
+            self.portText.set_sensitive(True)
+            if not self.getPort():
+                self.setPort('1')
+        else:
+            self.portText.set_sensitive(False)
+            self.setPort('')
