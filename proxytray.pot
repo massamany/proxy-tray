@@ -15,35 +15,35 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: proxy-tray.py:26
+#: proxytray.py:26
 msgid "Deactivate Proxy"
 msgstr ""
 
-#: proxy-tray.py:27
+#: proxytray.py:27
 msgid "Activate Manual Proxy"
 msgstr ""
 
-#: proxy-tray.py:28
+#: proxytray.py:28
 msgid "Activate Automatic Proxy"
 msgstr ""
 
-#: proxy-tray.py:55
+#: proxytray.py:55
 msgid "Exit Tray"
 msgstr ""
 
-#: proxy-tray.py:77
+#: proxytray.py:77
 msgid "Deactivated"
 msgstr ""
 
-#: proxy-tray.py:80
+#: proxytray.py:80
 msgid "Automatic"
 msgstr ""
 
-#: proxy-tray.py:83
+#: proxytray.py:83
 msgid "Manual"
 msgstr ""
 
-#: proxy-tray.py:85
+#: proxytray.py:85
 msgid "Proxy: "
 msgstr ""
 

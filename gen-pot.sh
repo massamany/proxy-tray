@@ -1,1 +1,1 @@
-pygettext -d proxy-tray proxy-tray.py
+pygettext -d proxytray proxytray.py

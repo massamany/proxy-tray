@@ -17,34 +17,34 @@ msgstr ""
 "X-Generator: Poedit 2.3\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: proxy-tray.py:26
+#: proxytray.py:26
 msgid "Deactivate Proxy"
 msgstr "Désactiver le Proxy"
 
-#: proxy-tray.py:27
+#: proxytray.py:27
 msgid "Activate Manual Proxy"
 msgstr "Activer le Proxy Manuel"
 
-#: proxy-tray.py:28
+#: proxytray.py:28
 msgid "Activate Automatic Proxy"
 msgstr "Activer le Proxy Automatique"
 
-#: proxy-tray.py:55
+#: proxytray.py:55
 msgid "Exit Tray"
 msgstr "Quitter"
 
-#: proxy-tray.py:77
+#: proxytray.py:77
 msgid "Deactivated"
 msgstr "Désactivé"
 
-#: proxy-tray.py:80
+#: proxytray.py:80
 msgid "Automatic"
 msgstr "Automatique"
 
-#: proxy-tray.py:83
+#: proxytray.py:83
 msgid "Manual"
 msgstr "Manuel"
 
-#: proxy-tray.py:85
+#: proxytray.py:85
 msgid "Proxy: "
 msgstr "Proxy : "

@@ -23,11 +23,11 @@ To install and run, just follow these few steps :
   On Fedora: `sudo dnf install libappindicator-gtk3`  
   For other distributions, just search for any packages containing appindicator.
 - Then install pip if not done : `sudo apt install python-pip` in order to execute `pip install pyyaml`
-- Then, clone this repo. For example in `~/proxy-tray`
-- Finally, execute this command (modified with your real clone path) : `~/proxy-tray/proxy-tray.py` to run it.
+- Then, clone this repo. For example in `~/proxytray`
+- Finally, execute this command (modified with your real clone path) : `~/proxytray/proxytray.py` to run it.
 
 If you want it up at startup, run `gnome-session-properties` and configure a new application at startup,
-using the previous command line with nohup : `nohup ~/proxy-tray/proxy-tray.py > /dev/null 2>&1 &`.
+using the previous command line with nohup : `nohup ~/proxytray/proxytray.py > /dev/null 2>&1 &`.
 
 ## Internationalization
 
@@ -35,7 +35,7 @@ French and English are handled. Default is English if detected locale is not han
 
 ## Settings
 
-You can configure ProxyTray with a file in your home directory : `~/.proxy-tray.yaml`.
+You can configure ProxyTray with a file in your home directory : `~/.proxytray.yaml`.
 
 For now it allows to configure:
 
