@@ -112,7 +112,7 @@ class ProfileEditor(Gtk.Window):
     
     def _getProfileValue(self, k, d = ''):
         val = self.profile.get(k)
-        return val if val != None else ''
+        return val if val != None else d
     
     def _updateProfile(self):
         self.profile = {}
@@ -227,7 +227,7 @@ class ProfileHost(Gtk.Window):
         self.portText = Gtk.SpinButton()
         self.portText.set_range(1, 65535)
         self.portText.set_increments(1, 100)
-        port = ProfileEditor._getProfileValue(name + 'Port', 1)
+        port = int(ProfileEditor._getProfileValue(name + 'Port', '1'))
         if port < 1:
             port = 1
         self.portText.set_text(str(port))
