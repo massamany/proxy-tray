@@ -13,6 +13,57 @@ class ProxyTrayConfig:
 
     _conf = _read()
 
+    def __init__(self, path, proxySettings):
+        self.path = path
+        self.proxySettings = proxySettings
+
+    def getPath(self):
+        return self.path
+
+    def generateProfile(self, name):
+        return {
+            'name': name,
+            'manual': True,
+            'auto': True,
+
+            'httpHost': self.proxySettings.getHttpHost(),
+            'httpPort': self.proxySettings.getHttpPort(),
+
+            'httpsHost': self.proxySettings.getHttpsHost(),
+            'httpsPort': self.proxySettings.getHttpsPort(),
+
+            'ftpHost': self.proxySettings.getFtpHost(),
+            'ftpPort': self.proxySettings.getFtpPort(),
+
+            'socksHost': self.proxySettings.getSocksHost(),
+            'socksPort': self.proxySettings.getSocksPort(),
+
+            'ignored': self.proxySettings.getIgnoredHosts(),
+
+            'autoConfigUrl': self.proxySettings.getAutoconfigUrl(),
+        }
+
+    def applyProfile(self, name):
+        profile = ProxyTrayConfig.getProfile(name)
+
+        if profile.get('manual'):
+            self.proxySettings.setHttpHost(profile.get('httpHost'))
+            self.proxySettings.setHttpPort(profile.get('httpPort'))
+
+            self.proxySettings.setHttpsHost(profile.get('httpsHost'))
+            self.proxySettings.setHttpsPort(profile.get('httpsPort'))
+
+            self.proxySettings.setFtpHost(profile.get('ftpHost'))
+            self.proxySettings.setFtpPort(profile.get('ftpPort'))
+
+            self.proxySettings.setSocksHost(profile.get('socksHost'))
+            self.proxySettings.setSocksPort(profile.get('socksPort'))
+
+            self.proxySettings.setIgnoredHosts(profile.get('ignored'))
+
+        if profile.get('auto'):
+            self.proxySettings.setAutoconfigUrl(profile.get('autoConfigUrl'))
+
     @staticmethod
     def _save():
         with open(os.getenv("HOME") + '/.proxytray.yaml', 'w+') as outfile:

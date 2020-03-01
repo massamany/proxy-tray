@@ -1,18 +1,17 @@
-import proxytray
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 import os
-from config import ProxyTrayConfig
+from lib.proxytray.proxytrayconfig import ProxyTrayConfig
 
 class ProfileEditor(Gtk.Window):
 
-    def __init__(self, proxyTray, profileToEdit):
-        self.proxyTray = proxyTray
+    def __init__(self, config, profileToEdit):
+        self.config = config
         self.creation = (profileToEdit == None)
         self.profile = {'manual': True, 'auto': True} if self.creation else profileToEdit
         Gtk.Window.__init__(self, title=(_("New Profile") if self.creation else _("Edit Profile")))
-        self.set_icon_from_file(os.path.abspath(proxyTray.path + '/icons/proxytray.png'))
+        self.set_icon_from_file(os.path.abspath(self.config.getPath() + '/icons/proxytray.png'))
 
         self.set_border_width(10)
 
@@ -72,6 +71,19 @@ class ProfileEditor(Gtk.Window):
         self.grid.attach(self.nameText, 1, 0, 1, 1)
 
         self._generateProfileConfigUI()
+
+        self.onApplyCommand = None
+        self.onSaveCommand = None
+        self.onDeleteCommand = None
+
+    def onApplyCallback(self, command):
+        self.onApplyCommand = command
+
+    def onSaveCallback(self, command):
+        self.onSaveCommand = command
+
+    def onDeleteCallback(self, command):
+        self.onDeleteCommand = command
 
     def _generateProfileConfigUI(self):
         modeBox = Gtk.HBox(spacing=6)
@@ -144,14 +156,8 @@ class ProfileEditor(Gtk.Window):
             if self.autoConfigUrlText.get_text():
                 self.profile['autoConfigUrl'] = self.autoConfigUrlText.get_text()
 
-    def _save(self, _):
-        self._updateProfile()
-        ProxyTrayConfig.saveProfile(self.profile)
-        self.proxyTray.updateProfilesMenu()
-        self.destroy()
-
     def _fromCurrent(self, _):
-        self.profile = self.proxyTray.generateProfile(self._getProfileValue('name'))
+        self.profile = self.config.generateProfile(self._getProfileValue('name'))
         self._hideAllModes()
         self.grid.remove_row(1)
         self._generateProfileConfigUI()
@@ -161,12 +167,23 @@ class ProfileEditor(Gtk.Window):
 
     def _delete(self, _):
         self._save(_)
-        self.proxyTray.deleteProfile(self.profile['name'])
+        ProxyTrayConfig.deleteProfile(self.profile['name'])
+        if self.onDeleteCommand:
+            self.onDeleteCommand(self.profile['name'])
         self.destroy()
 
     def _apply(self, _):
         self._save(_)
-        self.proxyTray.applyProfile(self.profile['name'])
+        self.config.applyProfile(self.profile['name'])
+        if self.onApplyCommand:
+            self.onApplyCommand(self.profile['name'])
+        self.destroy()
+
+    def _save(self, _):
+        self._updateProfile()
+        ProxyTrayConfig.saveProfile(self.profile)
+        if self.onSaveCommand:
+            self.onSaveCommand(self.profile['name'])
         self.destroy()
 
     def _changeName(self, _):
@@ -219,15 +236,15 @@ class ProfileEditor(Gtk.Window):
 
 class ProfileHost(Gtk.Window):
 
-    def __init__(self, ProfileEditor, name):
+    def __init__(self, profileEditor, name):
         self.hostText = Gtk.Entry()
-        self.hostText.set_text(ProfileEditor._getProfileValue(name + 'Host'))
+        self.hostText.set_text(profileEditor._getProfileValue(name + 'Host'))
         self.hostText.set_size_request(400, -1)
         self.hostText.connect("changed", self._hostChanged)
         self.portText = Gtk.SpinButton()
         self.portText.set_range(1, 65535)
         self.portText.set_increments(1, 100)
-        port = int(ProfileEditor._getProfileValue(name + 'Port', '1'))
+        port = int(profileEditor._getProfileValue(name + 'Port', '1'))
         if port < 1:
             port = 1
         self.portText.set_text(str(port))

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2020-02-18 23:22+CET\n"
+"POT-Creation-Date: 2020-03-01 23:49+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,35 +15,111 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: proxytray.py:26
+#: lib/proxytray/proxyprofile.py:13
+msgid "Edit Profile"
+msgstr ""
+
+#: lib/proxytray/proxyprofile.py:13 lib/proxytray/proxytraymenu.py:24
+msgid "New Profile"
+msgstr ""
+
+#: lib/proxytray/proxyprofile.py:23
+msgid "From Current Configuration"
+msgstr ""
+
+#: lib/proxytray/proxyprofile.py:27
+msgid "Save"
+msgstr ""
+
+#: lib/proxytray/proxyprofile.py:31
+msgid "Save and Apply"
+msgstr ""
+
+#: lib/proxytray/proxyprofile.py:35
+msgid "Cancel"
+msgstr ""
+
+#: lib/proxytray/proxyprofile.py:40
+msgid "Delete"
+msgstr ""
+
+#: lib/proxytray/proxyprofile.py:50
+msgid "Name: "
+msgstr ""
+
+#: lib/proxytray/proxyprofile.py:51
+msgid "Mode: "
+msgstr ""
+
+#: lib/proxytray/proxyprofile.py:52
+msgid "Leave Unchanged: "
+msgstr ""
+
+#: lib/proxytray/proxyprofile.py:53
+msgid "HTTP Proxy: "
+msgstr ""
+
+#: lib/proxytray/proxyprofile.py:54
+msgid "HTTPS Proxy: "
+msgstr ""
+
+#: lib/proxytray/proxyprofile.py:55
+msgid "FTP Proxy: "
+msgstr ""
+
+#: lib/proxytray/proxyprofile.py:56
+msgid "SOCKS Proxy: "
+msgstr ""
+
+#: lib/proxytray/proxyprofile.py:57
+msgid "Ignored Hosts: "
+msgstr ""
+
+#: lib/proxytray/proxyprofile.py:58
+msgid "Automatic Config URL: "
+msgstr ""
+
+#: lib/proxytray/proxytraymenu.py:15
 msgid "Deactivate Proxy"
 msgstr ""
 
-#: proxytray.py:27
+#: lib/proxytray/proxytraymenu.py:16
 msgid "Activate Manual Proxy"
 msgstr ""
 
-#: proxytray.py:28
+#: lib/proxytray/proxytraymenu.py:17
 msgid "Activate Automatic Proxy"
 msgstr ""
 
-#: proxytray.py:55
+#: lib/proxytray/proxytraymenu.py:22
+msgid "Proxy Profiles"
+msgstr ""
+
+#: lib/proxytray/proxytraymenu.py:56
 msgid "Exit Tray"
 msgstr ""
 
-#: proxytray.py:77
+#: lib/proxytray/proxytraymenu.py:75
 msgid "Deactivated"
 msgstr ""
 
-#: proxytray.py:80
-msgid "Automatic"
-msgstr ""
-
-#: proxytray.py:83
+#: lib/proxytray/proxytraymenu.py:78
 msgid "Manual"
 msgstr ""
 
-#: proxytray.py:85
+#: lib/proxytray/proxytraymenu.py:81
+msgid "Automatic"
+msgstr ""
+
+#: lib/proxytray/proxytraymenu.py:84
 msgid "Proxy: "
+msgstr ""
+
+#: lib/proxytray/proxytraymenu.py:104
+msgid "Apply"
+msgstr ""
+
+#: lib/proxytray/proxytraymenu.py:107
+msgid "Edit"
 msgstr ""
 
