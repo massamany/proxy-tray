@@ -24,12 +24,16 @@ class AppIndicatorProxyTrayMenu:
         self.profilesMenu = gtk.Menu()
         self.commandNewProfile = gtk.MenuItem(label=_('New Profile'))
 
+        self.profileEditor = ProfileEditor(self.config)
+        self.profileEditor.onSaveCallback(self._profilesUpdated)
+        self.profileEditor.onDeleteCallback(self._profilesUpdated)
+
         self._initMenu()
         gtk.main()
 
     def _initMenu(self):
-        self.proxySettings.onChangedMode(self._refresh)
-        self.refresh()
+        self.proxySettings.onChangedMode(self._changedProxyMode)
+        self._refreshProxyMode()
 
         self.commandCurrent.set_sensitive(False)
         self.menu.append(self.commandCurrent)
@@ -50,7 +54,7 @@ class AppIndicatorProxyTrayMenu:
         self.profilesMenuItem.set_submenu(self.profilesMenu)
         self.menu.append(self.profilesMenuItem)
         self.commandNewProfile.connect('activate', self._newProfile)
-        self.updateProfilesMenu()
+        self._refreshProfilesMenu()
 
         self.menu.append(gtk.SeparatorMenuItem())
 
@@ -63,10 +67,10 @@ class AppIndicatorProxyTrayMenu:
         self.indicator.set_status(appindicator.IndicatorStatus.ACTIVE)
         self.indicator.set_menu(self.menu)
 
-    def _refresh(self, _, __):
-        self.refresh()
+    def _changedProxyMode(self, _, __):
+        self._refreshProxyMode()
 
-    def refresh(self):
+    def _refreshProxyMode(self):
         mode = self.proxySettings.getMode()
         modeLib = ""
         self.commandNoProxy.set_sensitive(mode != ProxyMode.none)
@@ -83,17 +87,8 @@ class AppIndicatorProxyTrayMenu:
             self.indicator.set_icon_full(os.path.abspath(self.config.path + '/icons/proxy_auto.png'), modeLib)
 
         self.commandCurrent.set_label(_('Proxy: ') + modeLib)
-    
-    def _noProxy(self, _):
-        self.proxySettings.setMode(ProxyMode.none)
 
-    def _proxyMan(self, _):
-        self.proxySettings.setMode(ProxyMode.manual)
-
-    def _proxyAuto(self, _):
-        self.proxySettings.setMode(ProxyMode.auto)
-
-    def updateProfilesMenu(self):
+    def _refreshProfilesMenu(self):
         for oldItem in self.profilesMenu.get_children():
             self.profilesMenu.remove(oldItem)
         self.profilesMenu.append(self.commandNewProfile)
@@ -110,23 +105,27 @@ class AppIndicatorProxyTrayMenu:
             profileSubMenu.append(profileSubMenuItem)
         
         self.profilesMenu.show_all()
+    
+    def _noProxy(self, _):
+        self.proxySettings.setMode(ProxyMode.none)
+
+    def _proxyMan(self, _):
+        self.proxySettings.setMode(ProxyMode.manual)
+
+    def _proxyAuto(self, _):
+        self.proxySettings.setMode(ProxyMode.auto)
 
     def _newProfile(self, _):
-        self._openProfileEditor(None)
+        self.profileEditor.updateFromProfile(None)
 
     def _applyProfile(self, _, name):
         self.config.applyProfile(name)
 
     def _modifyProfile(self, _, name):
-        self._openProfileEditor(ProxyTrayConfig.getProfile(name))
-
-    def _openProfileEditor(self, profileToEdit):
-        editor = ProfileEditor(self.config, profileToEdit)
-        editor.onSaveCallback(self._profilesUpdated)
-        editor.onDeleteCallback(self._profilesUpdated)
+        self.profileEditor.updateFromProfile(ProxyTrayConfig.getProfile(name))
     
     def _profilesUpdated(self, name):
-        self.updateProfilesMenu()
+        self._refreshProfilesMenu()
 
     def quit(self, _):
         gtk.main_quit()

@@ -5,7 +5,6 @@ from inspect import currentframe, getframeinfo
 import gettext
 from lib.proxytray.proxytrayconfig import ProxyTrayConfig
 from lib.proxytray.proxysettings import GSettingsProxySettings, ProxyMode
-from lib.proxytray.proxyprofile import ProfileEditor
 from lib.proxytray.proxytraymenu import AppIndicatorProxyTrayMenu
 
 class ProxyTray:
