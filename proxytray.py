@@ -5,12 +5,20 @@ from inspect import currentframe, getframeinfo
 import gettext
 from lib.proxytray.proxytrayconfig import ProxyTrayConfig
 from lib.proxytray.proxysettings import GSettingsProxySettings, ProxyMode
-from lib.proxytray.proxytraymenu import AppIndicatorProxyTrayMenu
+from lib.proxytray.appindicatorproxytraymenu import AppIndicatorProxyTrayMenu
+from lib.proxytray.pystrayproxytraymenu import pystrayAvailable
+
+PYSTRAY_AVAILABLE = pystrayAvailable()
+
+if PYSTRAY_AVAILABLE:
+    from lib.proxytray.pystrayproxytraymenu import PysTrayProxyTrayMenu
 
 class ProxyTray:
 
     def __init__(self):
         print('init ProxyTray')
+
+        print("PYSTRAY_AVAILABLE", PYSTRAY_AVAILABLE)
 
         filename = getframeinfo(currentframe()).filename
         self.path = os.path.dirname(os.path.abspath(filename))
@@ -20,7 +28,11 @@ class ProxyTray:
 
         self.proxySettings = GSettingsProxySettings()
         self.config = ProxyTrayConfig(self.path, self.proxySettings)
-        self.menu = AppIndicatorProxyTrayMenu(self.config)
+
+        if PYSTRAY_AVAILABLE:
+            self.menu = PysTrayProxyTrayMenu(self.config)
+        else:
+            self.menu = AppIndicatorProxyTrayMenu(self.config)
 
     def _initLang(self):
         locale = ProxyTrayConfig.getLocale()

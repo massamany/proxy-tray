@@ -104,12 +104,11 @@ class ProfileEditor(Gtk.Window):
 
         self.grid.attach(modeBox, 1, 1, 1, 1)
 
-
-
     def _updateUI(self, forceModeManual = True):
         self.set_title(_("New Profile") if self.creation else _("Edit Profile"))
         self.deleteButton.set_sensitive(not self.creation)
-        self.nameText.set_text(self._getProfileValue('name'))
+        if not self.creation:
+            self.nameText.set_text(self._getProfileValue('name'))
         self.leaveUnchangedManualButton.set_active(not self._getProfileValue('manual'))
         self.leaveUnchangedAutoButton.set_active(not self._getProfileValue('auto'))
         self.httpHost.updateFromProfile()

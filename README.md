@@ -18,9 +18,10 @@ So it might not be made in a fully pythonic way of coding. Please be indulgent :
 To install and run, just follow these few steps :
 
 - First, you need Python. It's generally installed by default on every Linux distros.
-- Then, you will need to install `gir1.2-appindicator3`.  
-  To install it on Ubuntu/Mint/Debian: `sudo apt-get install gir1.2-appindicator3`  
-  On Fedora: `sudo dnf install libappindicator-gtk3`  
+- Then, you will need to install `gir1.2-appindicator3` OR `pystray`.  
+  - To install appindicator on Ubuntu/Mint/Debian: `sudo apt-get install gir1.2-appindicator3`.  
+    On Fedora: `sudo dnf install libappindicator-gtk3`.  
+  - If you choose pystray, just install it from the sources : https://github.com/moses-palmer/pystray.
   For other distributions, just search for any packages containing appindicator.
 - Then install pip if not done : `sudo apt install python-pip` in order to execute `pip install pyyaml`
 - Then, clone this repo. For example in `~/proxytray`
